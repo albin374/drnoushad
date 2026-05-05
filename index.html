@@ -204,20 +204,35 @@
       z-index: 2;
       padding: 0 60px;
       max-width: 750px;
-      animation: heroFadeIn 1.4s ease forwards;
     }
 
-    @keyframes heroFadeIn {
+    @keyframes heroTextReveal {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(30px) translateZ(0);
+        filter: blur(5px);
       }
-
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) translateZ(0);
+        filter: blur(0);
       }
     }
+
+    .hero-eyebrow,
+    .hero-title,
+    .hero-subtitle,
+    .hero-desc,
+    .hero-actions {
+      opacity: 0;
+      animation: heroTextReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .hero-eyebrow { animation-delay: 0.3s; }
+    .hero-title { animation-delay: 0.5s; }
+    .hero-subtitle { animation-delay: 0.7s; }
+    .hero-desc { animation-delay: 0.9s; }
+    .hero-actions { animation-delay: 1.1s; }
 
     .hero-eyebrow {
       font-size: 0.65rem;
@@ -263,7 +278,8 @@
     }
 
     .hero-desc {
-      font-size: 0.78rem;
+      font-size: 0.85rem;
+      text-align: justify;
       line-height: 1.9;
       color: rgba(245, 240, 232, 0.6);
       font-weight: 300;
@@ -521,7 +537,8 @@
     }
 
     .about-text p {
-      font-size: 0.82rem;
+      font-size: 0.95rem;
+      text-align: justify;
       line-height: 2;
       color: rgba(245, 240, 232, 0.65);
       margin-bottom: 20px;
@@ -572,7 +589,8 @@
     }
 
     .businesses-intro {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
+      text-align: justify;
       line-height: 1.9;
       color: var(--text-muted);
       font-weight: 300;
@@ -661,7 +679,8 @@
     }
 
     .biz-desc {
-      font-size: 0.73rem;
+      font-size: 0.82rem;
+      text-align: justify;
       line-height: 1.8;
       color: rgba(245, 240, 232, 0.5);
       font-weight: 300;
@@ -716,14 +735,16 @@
     .quote-video {
       position: absolute;
       top: 0;
-      left: 0;
-      width: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 120px);
       height: 100%;
-      object-fit: cover;
-      object-position: center 20%;
+      object-fit: contain;
+      object-position: center;
       z-index: 0;
       opacity: 0.6;
-      transform: scale(1.08);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
     }
 
     .quote-bg-overlay {
@@ -757,6 +778,7 @@
       line-height: 1.4;
       position: relative;
       z-index: 1;
+      text-align: justify;
     }
 
     .quote-author {
@@ -818,7 +840,8 @@
     }
 
     .pillar-text {
-      font-size: 0.75rem;
+      font-size: 0.85rem;
+      text-align: justify;
       line-height: 1.9;
       color: var(--text-muted);
       font-weight: 300;
@@ -894,7 +917,8 @@
     }
 
     .legacy-text p {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
+      text-align: justify;
       line-height: 1.95;
       color: var(--text-muted);
       margin-bottom: 20px;
@@ -1019,6 +1043,10 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
+      .hero-video {
+        object-position: center center;
+      }
+
       nav {
         padding: 24px 30px;
       }
@@ -1264,7 +1292,7 @@
   <!-- QUOTE -->
   <div class="quote-break">
     <video class="quote-video" autoplay muted loop playsinline>
-      <source src="media/thirdsection.mp4" type="video/mp4">
+      <source src="media/thirdsection.mp4?v=2" type="video/mp4">
     </video>
     <div class="quote-bg-overlay"></div>
     <p class="big-quote reveal" style="position: relative; z-index: 1;">
