@@ -101,9 +101,27 @@
       font-weight: 300;
     }
 
+    .mobile-only {
+      display: none;
+    }
+
     .nav-links a:hover {
       opacity: 1;
       color: var(--gold);
+    }
+
+    .nav-links a.nav-cta-mobile {
+      color: var(--gold);
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      padding: 10px 24px;
+      display: inline-block;
+      opacity: 1;
+      width: fit-content;
+    }
+
+    .nav-links a.nav-cta-mobile:hover {
+      background: var(--gold);
+      color: var(--dark);
     }
 
     .nav-cta {
@@ -1048,6 +1066,11 @@
 
       nav {
         padding: 24px 30px;
+        position: absolute;
+      }
+
+      .mobile-only {
+        display: block;
       }
 
       .nav-links,
@@ -1139,6 +1162,7 @@
       <li><a href="#about">About</a></li>
       <li><a href="#businesses">Businesses</a></li>
       <li><a href="#legacy">Legacy</a></li>
+      <li class="mobile-only" style="margin-top: 10px;"><a href="#connect" class="nav-cta-mobile">Connect</a></li>
     </ul>
     <a href="#connect" class="nav-cta">Connect</a>
     <div class="nav-toggle" onclick="toggleMenu()">
@@ -1450,23 +1474,76 @@
       }
     }
 
-    // Quote Video Mute Toggle
-    const quoteVideo = document.querySelector('.quote-video');
-    const quoteMuteBtn = document.getElementById('quote-mute-btn');
-    if (quoteVideo && quoteMuteBtn) {
-      quoteMuteBtn.addEventListener('click', () => {
-        if (quoteVideo.muted) {
-          quoteVideo.muted = false;
-          quoteMuteBtn.textContent = 'Mute Music';
-          quoteMuteBtn.style.background = 'var(--gold)';
-          quoteMuteBtn.style.color = 'var(--dark)';
-        } else {
-          quoteVideo.muted = true;
-          quoteMuteBtn.textContent = 'Unmute Music';
-          quoteMuteBtn.style.background = 'rgba(6,6,8,0.6)';
-          quoteMuteBtn.style.color = 'var(--gold)';
+    // Close mobile menu when a link is clicked
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        const linksContainer = document.querySelector('.nav-links');
+        if (window.innerWidth <= 1024 && linksContainer.style.display === 'flex') {
+          linksContainer.style.display = 'none';
         }
       });
+    });
+
+    // Quote Video Mute Toggle & Auto-play sound on scroll
+    const quoteBreak = document.querySelector('.quote-break');
+    const quoteVideo = document.querySelector('.quote-video');
+    const quoteMuteBtn = document.getElementById('quote-mute-btn');
+    
+    function setMuteState(isMuted, isUserAction = false) {
+      if (!quoteVideo) return;
+      
+      if (isMuted) {
+        quoteVideo.muted = true;
+        updateButton(true);
+      } else {
+        quoteVideo.muted = false;
+        quoteVideo.volume = 1.0;
+        const playPromise = quoteVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("Audio play blocked by browser:", error);
+            // If browser blocks programmatic unmute, revert to muted
+            if (!isUserAction) {
+              quoteVideo.muted = true;
+              updateButton(true);
+            }
+          });
+        }
+        updateButton(false);
+      }
+    }
+
+    function updateButton(isMuted) {
+      if (!quoteMuteBtn) return;
+      if (isMuted) {
+        quoteMuteBtn.textContent = 'Unmute Music';
+        quoteMuteBtn.style.background = 'rgba(6,6,8,0.6)';
+        quoteMuteBtn.style.color = 'var(--gold)';
+      } else {
+        quoteMuteBtn.textContent = 'Mute Music';
+        quoteMuteBtn.style.background = 'var(--gold)';
+        quoteMuteBtn.style.color = 'var(--dark)';
+      }
+    }
+
+    if (quoteVideo && quoteMuteBtn) {
+      quoteMuteBtn.addEventListener('click', () => {
+        setMuteState(!quoteVideo.muted, true);
+      });
+    }
+
+    if (quoteBreak && quoteVideo) {
+      const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setMuteState(false, false);
+          } else {
+            setMuteState(true, false);
+          }
+        });
+      }, { threshold: 0.5 });
+      
+      videoObserver.observe(quoteBreak);
     }
   </script>
 </body>
